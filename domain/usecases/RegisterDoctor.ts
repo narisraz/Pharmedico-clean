@@ -1,5 +1,5 @@
 import { Builder } from 'builder-pattern/dist/src/Builder';
-import { identity, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { Doctor } from '../entities/Doctor';
 import { ErrorEntity } from '../entities/errors/ErrorEntity';
