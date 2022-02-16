@@ -1,6 +1,6 @@
 import { Builder } from 'builder-pattern/dist/src/Builder';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { identity, Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { Doctor } from '../entities/Doctor';
 import { ErrorEntity } from '../entities/errors/ErrorEntity';
 import { RegisterDoctorRequest } from '../entities/request/RegisterDoctorRequest';
@@ -18,12 +18,12 @@ export class RegisterDoctor implements RegisterDoctorInputBoundary {
 
   execute(
     input: RegisterDoctorRequest
-  ): Observable<Observable<RegisterDoctorResponse> | ErrorEntity> {
+  ): Observable<RegisterDoctorResponse | ErrorEntity> {
     return this.userCredentialRepository
       .save(this.buildUserCredential(input))
       .pipe(
         map((credential: UserCredential) => this.saveDoctor(credential, input)),
-        map(this.buildResponse)
+        switchMap(identity)
       );
   }
 
@@ -40,12 +40,14 @@ export class RegisterDoctor implements RegisterDoctorInputBoundary {
   private saveDoctor(
     credential: UserCredential,
     input: RegisterDoctorRequest
-  ): Observable<Doctor> | ErrorEntity {
-    if (!credential.id) {
-      return ErrorEntity.UserAlreadyRegistered;
-    } else {
-      return this.doctorRepository.save(this.buildDoctor(credential, input));
-    }
+  ): Observable<Doctor | ErrorEntity> {
+    return this.doctorRepository
+      .save(this.buildDoctor(credential, input))
+      .pipe(
+        map((doctor) =>
+          doctor.id ? doctor : ErrorEntity.UserAlreadyRegistered
+        )
+      );
   }
 
   private buildDoctor(

@@ -7,5 +7,5 @@ import { UseCase } from './UseCase';
 export interface RegisterDoctorInputBoundary
   extends UseCase<
     RegisterDoctorRequest,
-    Observable<Observable<RegisterDoctorResponse> | ErrorEntity>
+    Observable<RegisterDoctorResponse | ErrorEntity>
   > {}
