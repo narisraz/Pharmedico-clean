@@ -22,32 +22,25 @@ export class RegisterDoctor implements RegisterDoctorInputBoundary {
     return this.userCredentialRepository
       .save(this.buildUserCredential(input))
       .pipe(
-        map((credential: UserCredential) => this.saveDoctor(credential, input)),
-        switchMap(identity)
+        switchMap((credential: UserCredential) =>
+          this.saveDoctor(credential, input)
+        )
       );
-  }
-
-  private buildResponse(
-    input: Observable<Doctor> | ErrorEntity
-  ): Observable<RegisterDoctorResponse> | ErrorEntity {
-    if (input instanceof Observable) {
-      return input.pipe(map((doctor) => new RegisterDoctorResponse(doctor.id)));
-    } else {
-      return input;
-    }
   }
 
   private saveDoctor(
     credential: UserCredential,
     input: RegisterDoctorRequest
-  ): Observable<Doctor | ErrorEntity> {
+  ): Observable<RegisterDoctorResponse | ErrorEntity> {
     return this.doctorRepository
       .save(this.buildDoctor(credential, input))
-      .pipe(
-        map((doctor) =>
-          doctor.id ? doctor : ErrorEntity.UserAlreadyRegistered
-        )
-      );
+      .pipe(map(this.buildResponse));
+  }
+
+  private buildResponse(doctor: Doctor): RegisterDoctorResponse | ErrorEntity {
+    return doctor.id
+      ? new RegisterDoctorResponse(doctor.id)
+      : ErrorEntity.UserAlreadyRegistered;
   }
 
   private buildDoctor(
