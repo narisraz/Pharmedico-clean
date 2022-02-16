@@ -1,3 +1,4 @@
 export enum ErrorEntity {
-  UserAlreadyRegistered = '',
+  UserAlreadyRegistered = 'User already registered',
+  DoctorNotFound = 'Doctor not found',
 }
