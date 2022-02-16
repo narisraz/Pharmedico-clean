@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Doctor } from '../entities/Doctor';
 import { ErrorEntity } from '../entities/errors/ErrorEntity';
-import { DoctorDetailsRequest } from '../entities/request/DoctorDetailsRequest';
+import { GetDoctorDetailsRequest } from '../entities/request/GetDoctorDetailsRequest';
 import { GetDoctorDetailsResponse } from '../entities/response/GetDoctorDetailsResponse';
 import { GetDoctorDetailsInputBoundary } from '../ports/in/GetDoctorDetailsInputBoundary';
 import { DoctorRepository } from '../ports/out/DoctorRepository';
@@ -11,7 +11,7 @@ export class GetDoctorDetails implements GetDoctorDetailsInputBoundary {
   constructor(private doctorRepository: DoctorRepository) {}
 
   execute(
-    input: DoctorDetailsRequest
+    input: GetDoctorDetailsRequest
   ): Observable<GetDoctorDetailsResponse | ErrorEntity> {
     return this.doctorRepository.get(input.id).pipe(map(this.buildResponse));
   }
